@@ -1,26 +1,144 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #faf7f2;
+  --surface: #ffffff;
+  --sunken: #f1ece3;
+  --ink: #1c1b19;
+  --muted: #6b675f;
+  --line: #e6dfd3;
+  --accent: #b4461e;
+  --accent-strong: #973a18;
+  --accent-soft: #f6e4da;
+  --sea: #1e5b57;
+  --on-image: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #13120f;
+    --surface: #1c1a17;
+    --sunken: #23211d;
+    --ink: #f1ece3;
+    --muted: #a39d92;
+    --line: #2f2c27;
+    --accent: #e3825a;
+    --accent-strong: #f09c78;
+    --accent-soft: #3a2419;
+    --sea: #74b8b0;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-sea: var(--sea);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-fraunces);
+}
+
+html {
+  scroll-padding-top: 6rem;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Article body. Content comes from the CMS as HTML, so it is styled here rather than per element. */
+.article-body {
+  --tw-prose-body: var(--ink);
+  --tw-prose-headings: var(--ink);
+  --tw-prose-links: var(--accent);
+  --tw-prose-bold: var(--ink);
+  --tw-prose-counters: var(--muted);
+  --tw-prose-bullets: var(--accent);
+  --tw-prose-hr: var(--line);
+  --tw-prose-quotes: var(--ink);
+  --tw-prose-quote-borders: var(--accent);
+  --tw-prose-captions: var(--muted);
+  --tw-prose-th-borders: var(--line);
+  --tw-prose-td-borders: var(--line);
+  --tw-prose-code: var(--ink);
+}
+
+.article-body :where(h2, h3, h4) {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.article-body :where(h2) {
+  font-size: 1.75em;
+  margin-top: 2em;
+}
+
+.article-body :where(a) {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.article-body :where(a:hover) {
+  color: var(--accent-strong);
+}
+
+.article-body :where(img) {
+  border-radius: 0.75rem;
+  width: 100%;
+  height: auto;
+}
+
+.article-body :where(figure) {
+  margin-block: 2em;
+}
+
+.article-body :where(figcaption) {
+  text-align: center;
+}
+
+.article-body :where(iframe) {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border-radius: 0.75rem;
+}
+
+.article-body :where(table) {
+  display: block;
+  overflow-x: auto;
+  font-size: 0.9em;
+}
+
+.article-body :where(blockquote) {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: normal;
+  font-size: 1.15em;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
