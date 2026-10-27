@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  // Uploaded images live outside the build (see UPLOAD_DIR). Without this, webpack copies
+  // the whole uploads folder into .next/standalone and new uploads land in the build.
+  outputFileTracingExcludes: {
+    "/*": ["./storage/**/*", "./data/**/*"],
+  },
   experimental: {
     agentFeedback: true,
   },

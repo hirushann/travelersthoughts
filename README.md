@@ -50,6 +50,18 @@ To change the schema: edit `lib/db/schema.ts`, run `npm run db:generate` to writ
 
 Uploads are stored in `storage/uploads/` (or `UPLOAD_DIR`) and served from `/uploads/...`. Large photos are resized to 2400px wide on upload and served as AVIF/WebP through Next's image optimizer. **Back this folder up together with the database**; it is not in git.
 
+### Deploying
+
+The images are not in the repository, so a server built from git has none until you copy them over. Give them a permanent home outside the app folder, so deploys never touch them:
+
+```bash
+rsync -avz storage/uploads/ user@server:/var/www/travelersthoughts-uploads/
+```
+
+Then set `UPLOAD_DIR=/var/www/travelersthoughts-uploads` in the server's environment and restart. New uploads from the admin are written there too.
+
+With `output: "standalone"`, also copy `public/` and `.next/static/` next to `.next/standalone/server.js` as the Next.js docs describe. Uploads are deliberately excluded from the standalone bundle.
+
 ## Moving off WordPress
 
 All content and media have already been imported. The scripts in `scripts/wordpress/` exist for one last sync just before switching the domain:

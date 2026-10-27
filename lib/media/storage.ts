@@ -7,9 +7,19 @@ import { db } from "../db/client";
 import { media } from "../db/schema";
 import { slugify } from "../content/sanitize";
 
-/** Where uploaded files live. Outside the build output so uploads survive deploys; back this folder up. */
-// The ignore comment stops the bundler tracing (and shipping) the uploads folder with the server code.
-export const UPLOAD_DIR = path.resolve(/*turbopackIgnore: true*/ process.env.UPLOAD_DIR ?? path.join(process.cwd(), "storage", "uploads"));
+// The standalone server (`node .next/standalone/server.js`) chdirs into its own folder, so a
+// cwd-relative default would point inside the build. Step back out to the project root.
+function projectRoot() {
+  const cwd = /*turbopackIgnore: true*/ process.cwd();
+  return path.basename(cwd) === "standalone" && path.basename(path.dirname(cwd)) === ".next" ? path.resolve(cwd, "../..") : cwd;
+}
+
+/**
+ * Where uploaded files live: UPLOAD_DIR, or storage/uploads in the project. Outside the build
+ * output so uploads survive deploys; back this folder up. The ignore comment stops the bundler
+ * tracing (and shipping) the folder with the server code.
+ */
+export const UPLOAD_DIR = path.resolve(/*turbopackIgnore: true*/ process.env.UPLOAD_DIR ?? path.join(projectRoot(), "storage", "uploads"));
 export const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 const MAX_WIDTH = 2400;
 
