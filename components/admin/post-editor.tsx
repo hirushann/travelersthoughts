@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/admin/link";
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { deletePost, savePost, type SaveState } from "@/app/admin/(panel)/posts/actions";
 import type { MediaItem } from "@/lib/media/storage";
@@ -52,10 +53,12 @@ const slugify = (text: string) =>
 const plain = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 
 export function PostEditor({ post, categories, authors, tagSuggestions, canChooseAuthor, siteUrl, justCreated }: Props) {
+  const router = useRouter();
   const [dirty, setDirty] = useState(false);
   const [state, action, pending] = useActionState<SaveState, FormData>(async (prev, fd) => {
     const result = await savePost(prev, fd);
     if (result.ok) setDirty(false);
+    if (result.createdId) router.replace(`/admin/posts/${result.createdId}/?created=1`);
     return result;
   }, {});
   const [title, setTitle] = useState(post.title);

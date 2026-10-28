@@ -16,6 +16,8 @@ export type SaveState = {
   savedAt?: string;
   status?: "draft" | "published";
   slug?: string;
+  /** Set when a new post was just created; the editor then moves to its edit URL. */
+  createdId?: number;
 };
 
 // First path segments the site already uses; a post can't take them.
@@ -142,8 +144,9 @@ export async function savePost(_prev: SaveState, formData: FormData): Promise<Sa
   // Pages, listings, sitemap and feed all read through this tag.
   updateTag(CONTENT_TAG);
 
-  if (!existing) redirect(`/admin/posts/${postId}/?created=1`);
-  return { ok: true, savedAt: now.toISOString(), status: nextStatus, slug };
+  // A new post returns its id rather than redirecting: a redirect would render the whole
+  // edit page inside this response, which is slow on shared hosting and left the UI on "Saving…".
+  return { ok: true, savedAt: now.toISOString(), status: nextStatus, slug, createdId: existing ? undefined : postId! };
 }
 
 export async function deletePost(formData: FormData) {

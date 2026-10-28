@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/admin/link";
 import { adminDate, buttonClass, inputClass, Notice, PageHeader, StatusBadge } from "@/components/admin/ui";
 import { listPosts } from "@/lib/admin/queries";
 import { requireUser } from "@/lib/auth";

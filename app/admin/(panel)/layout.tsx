@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/admin/link";
 import { Suspense } from "react";
 import { AdminNav } from "@/components/admin/admin-nav";
 import { Logo } from "@/components/logo";
@@ -13,7 +13,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/admin">) {
       <aside className="border-b border-line bg-surface lg:sticky lg:top-0 lg:h-screen lg:w-64 lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-b-0">
         <div className="flex h-full flex-col gap-4 p-4 lg:p-5">
           <div className="flex items-center justify-between">
-            <Logo className="[&_span]:text-lg" />
+            <Logo className="[&_span]:text-lg" prefetch={false} />
             <Link href="/admin/posts/new/" className="rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-white lg:hidden">
               New post
             </Link>

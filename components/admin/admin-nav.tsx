@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/admin/link";
 import { usePathname, useSearchParams } from "next/navigation";
 
 type Item = { href: string; label: string; match: (path: string, type: string | null) => boolean };

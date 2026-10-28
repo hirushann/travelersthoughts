@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/admin/link";
 import { adminDate, Notice, PageHeader } from "@/components/admin/ui";
 import { dashboardStats } from "@/lib/admin/queries";
 import { requireUser } from "@/lib/auth";

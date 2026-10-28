@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/admin/link";
 import { MediaLibrary } from "@/components/admin/media-library";
 import { buttonClass, inputClass, PageHeader } from "@/components/admin/ui";
 import { listMedia } from "@/lib/admin/queries";
