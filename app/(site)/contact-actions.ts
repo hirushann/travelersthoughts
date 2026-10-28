@@ -43,19 +43,25 @@ export async function sendContactMessage(_prev: ContactState, formData: FormData
 
   const h = await headers();
   const ip = (h.get("cf-connecting-ip") ?? h.get("x-forwarded-for")?.split(",")[0] ?? "").trim().slice(0, 64) || null;
-  if (ip) {
-    const [{ n }] = await db
-      .select({ n: count() })
-      .from(contactMessages)
-      .where(and(eq(contactMessages.ip, ip), gt(contactMessages.createdAt, new Date(Date.now() - 60 * 60 * 1000))));
-    if (n >= MAX_PER_HOUR) return { error: "You've sent a few messages already. Please try again in an hour.", values };
-  }
+  try {
+    if (ip) {
+      const [{ n }] = await db
+        .select({ n: count() })
+        .from(contactMessages)
+        .where(and(eq(contactMessages.ip, ip), gt(contactMessages.createdAt, new Date(Date.now() - 60 * 60 * 1000))));
+      if (n >= MAX_PER_HOUR) return { error: "You've sent a few messages already. Please try again in an hour.", values };
+    }
 
-  await db.insert(contactMessages).values({
-    ...values,
-    ip,
-    userAgent: h.get("user-agent")?.slice(0, 255) ?? null,
-    createdAt: new Date(),
-  });
+    await db.insert(contactMessages).values({
+      ...values,
+      ip,
+      userAgent: h.get("user-agent")?.slice(0, 255) ?? null,
+      createdAt: new Date(),
+    });
+  } catch (err) {
+    console.error("Could not save contact message", err);
+    // Keep what they typed so nothing is lost if they try again later.
+    return { error: "Sorry, we couldn't send your message just now. Please try again in a little while.", values };
+  }
   return { ok: true };
 }

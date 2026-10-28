@@ -248,6 +248,12 @@ export async function listMessages({ status, page = 1 }: { status?: "new" | "rea
 }
 
 export async function countNewMessages() {
-  const [{ n }] = await db.select({ n: count() }).from(contactMessages).where(eq(contactMessages.status, "new"));
-  return n;
+  try {
+    const [{ n }] = await db.select({ n: count() }).from(contactMessages).where(eq(contactMessages.status, "new"));
+    return n;
+  } catch (err) {
+    // The dashboard must not go down because a migration hasn't been run yet.
+    console.error("Could not count contact messages (has `db:migrate` been run?)", err);
+    return 0;
+  }
 }

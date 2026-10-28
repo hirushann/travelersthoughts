@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ConfirmSubmit } from "@/components/admin/confirm-submit";
 import Link from "@/components/admin/link";
-import { adminDate, buttonClass, PageHeader } from "@/components/admin/ui";
+import { adminDate, buttonClass, Notice, PageHeader } from "@/components/admin/ui";
 import { listMessages } from "@/lib/admin/queries";
 import { requireAdmin } from "@/lib/auth";
 import { topicLabel } from "@/lib/contact";
@@ -14,7 +14,21 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
   const sp = await searchParams;
   const status = sp.status === "new" || sp.status === "read" ? sp.status : undefined;
   const page = Number(sp.page) || 1;
-  const { rows, total, totalPages } = await listMessages({ status, page });
+  const result = await listMessages({ status, page }).catch((err) => {
+    console.error("Could not load contact messages (has `db:migrate` been run?)", err);
+    return null;
+  });
+  if (!result) {
+    return (
+      <>
+        <PageHeader title="Messages" />
+        <Notice tone="error">
+          The messages table doesn&rsquo;t exist in this database yet. Run <code>npm run db:migrate</code> against it, then reload.
+        </Notice>
+      </>
+    );
+  }
+  const { rows, total, totalPages } = result;
 
   const href = (overrides: { status?: string; page?: number }) => {
     const params = new URLSearchParams();
