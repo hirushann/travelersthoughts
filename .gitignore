@@ -24,6 +24,8 @@
 .DS_Store
 *.pem
 *.sql
+# ...but database migrations belong in the repo
+!drizzle/*.sql
 
 # debug
 npm-debug.log*

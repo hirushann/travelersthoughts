@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "@/components/admin/link";
 import { adminDate, Notice, PageHeader } from "@/components/admin/ui";
-import { dashboardStats } from "@/lib/admin/queries";
+import { countNewMessages, dashboardStats } from "@/lib/admin/queries";
 import { requireUser } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -9,7 +9,10 @@ export const metadata: Metadata = { title: "Dashboard" };
 export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
   const user = await requireUser();
   const { denied } = await searchParams;
-  const stats = await dashboardStats(user.authorId);
+  const [stats, newMessages] = await Promise.all([
+    dashboardStats(user.authorId),
+    user.role === "admin" ? countNewMessages() : Promise.resolve(0),
+  ]);
   const firstName = user.name.split(" ")[0];
 
   const cards = [
@@ -23,6 +26,17 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
     <>
       {denied && <Notice tone="error">That section is for admins only.</Notice>}
       <PageHeader title={`Hello, ${firstName}`} description="Here's what's happening on Traveler's Thoughts." />
+      {newMessages > 0 && (
+        <Link
+          href="/admin/messages/?status=new"
+          className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-accent/30 bg-accent-soft px-5 py-4 text-sm hover:border-accent"
+        >
+          <span>
+            <strong>{newMessages}</strong> new message{newMessages === 1 ? "" : "s"} from the contact form
+          </span>
+          <span className="font-semibold text-accent">Read →</span>
+        </Link>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((c) => (

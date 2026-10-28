@@ -1,7 +1,7 @@
 import "server-only";
 import { and, asc, count, desc, eq, inArray, like, or, sql, type SQL } from "drizzle-orm";
 import { db } from "../db/client";
-import { authors, categories, media, postCategories, posts, postTags, tags, users } from "../db/schema";
+import { authors, categories, contactMessages, media, postCategories, posts, postTags, tags, users } from "../db/schema";
 import type { Post } from "../content/types";
 import { toMediaItem } from "../media/storage";
 
@@ -220,4 +220,34 @@ export async function getPostPreview(id: number): Promise<(Post & { authorId: nu
     categories: cats.map(toCategory),
     tags: post.tagNames.map((name) => ({ name, slug: name.toLowerCase() })),
   };
+}
+
+export const MESSAGES_PAGE_SIZE = 30;
+
+export async function listMessages({ status, page = 1 }: { status?: "new" | "read"; page?: number }) {
+  const where = status ? eq(contactMessages.status, status) : undefined;
+  const [rows, [{ n }]] = await Promise.all([
+    db
+      .select({
+        id: contactMessages.id,
+        name: contactMessages.name,
+        email: contactMessages.email,
+        topic: contactMessages.topic,
+        message: contactMessages.message,
+        status: contactMessages.status,
+        createdAt: contactMessages.createdAt,
+      })
+      .from(contactMessages)
+      .where(where)
+      .orderBy(desc(contactMessages.createdAt))
+      .limit(MESSAGES_PAGE_SIZE)
+      .offset((Math.max(1, page) - 1) * MESSAGES_PAGE_SIZE),
+    db.select({ n: count() }).from(contactMessages).where(where),
+  ]);
+  return { rows, total: n, totalPages: Math.max(1, Math.ceil(n / MESSAGES_PAGE_SIZE)) };
+}
+
+export async function countNewMessages() {
+  const [{ n }] = await db.select({ n: count() }).from(contactMessages).where(eq(contactMessages.status, "new"));
+  return n;
 }

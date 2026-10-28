@@ -139,3 +139,20 @@ export const redirects = mysqlTable("redirects", {
   toPath: varchar("to_path", { length: 512 }).notNull(),
   createdAt: datetime("created_at").notNull(),
 });
+
+export const contactMessages = mysqlTable(
+  "contact_messages",
+  {
+    id: int("id").primaryKey().autoincrement(),
+    name: varchar("name", { length: 191 }).notNull(),
+    email: varchar("email", { length: 191 }).notNull(),
+    topic: varchar("topic", { length: 64 }).notNull(),
+    message: text("message").notNull(),
+    status: mysqlEnum("status", ["new", "read"]).notNull().default("new"),
+    // Kept for spotting abuse; not shown to readers.
+    ip: varchar("ip", { length: 64 }),
+    userAgent: varchar("user_agent", { length: 255 }),
+    createdAt: datetime("created_at").notNull(),
+  },
+  (t) => [index("contact_messages_status_idx").on(t.status, t.createdAt), index("contact_messages_ip_idx").on(t.ip, t.createdAt)],
+);

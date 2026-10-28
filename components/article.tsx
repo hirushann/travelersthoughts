@@ -3,8 +3,9 @@ import Link from "next/link";
 import { getRelatedPosts, type Post } from "@/lib/content";
 import { opensWith, prepareArticleHtml, type TocItem } from "@/lib/content/html";
 import { articleJsonLd } from "@/lib/seo";
-import { categoryPath, formatDate, postPath } from "@/lib/site";
+import { categoryPath, formatDate, postPath, site } from "@/lib/site";
 import { Breadcrumbs } from "./breadcrumbs";
+import { ContactForm } from "./contact-form";
 import { CoverImage } from "./cover-image";
 import { JsonLd } from "./json-ld";
 import { PostCard } from "./post-card";
@@ -166,6 +167,7 @@ export function StandalonePage({ page }: { page: Post }) {
       <Breadcrumbs items={[{ name: "Home", path: "/" }, { name: page.title, path: postPath(page.slug) }]} />
       <h1 className="mt-8 font-display text-4xl leading-tight font-semibold tracking-tight text-balance sm:text-5xl">{page.title}</h1>
       <div className="article-body prose prose-lg mt-10 max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
+      {page.slug === site.contactPageSlug && <ContactForm />}
     </article>
   );
 }

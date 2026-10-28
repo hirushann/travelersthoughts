@@ -13,6 +13,7 @@ const ITEMS: Item[] = [
 ];
 
 const ADMIN_ITEMS: Item[] = [
+  { href: "/admin/messages/", label: "Messages", match: (p) => p.startsWith("/admin/messages") },
   { href: "/admin/categories/", label: "Categories", match: (p) => p.startsWith("/admin/categories") },
   { href: "/admin/tags/", label: "Tags", match: (p) => p.startsWith("/admin/tags") },
   { href: "/admin/users/", label: "Users", match: (p) => p.startsWith("/admin/users") },

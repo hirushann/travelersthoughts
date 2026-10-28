@@ -6,6 +6,8 @@ export const site = {
     "Destination guides, day-by-day itineraries and practical travel tips from Traveler's Thoughts, for exploring the world smarter, cheaper and more confidently.",
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://travelersthoughts.com").replace(/\/$/, ""),
   locale: "en_US",
+  // The page that shows the contact form under its content.
+  contactPageSlug: "contact-travel-blog",
   social: {
     facebook: "https://www.facebook.com/profile.php?id=61574573740285",
     instagram: "https://www.instagram.com/travelers_thoughts_/",
