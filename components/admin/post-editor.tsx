@@ -114,7 +114,7 @@ export function PostEditor({ post, categories, authors, tagSuggestions, canChoos
       <input type="hidden" name="content" value={content} />
       <input type="hidden" name="coverImage" value={cover.url} />
 
-      <div className="sticky top-0 z-20 -mx-4 mb-6 flex min-h-16 flex-wrap items-center gap-3 border-b border-line bg-paper/90 px-4 py-2 backdrop-blur sm:-mx-8 sm:px-8">
+      <div className="sticky top-0 z-20 -mx-4 mb-6 flex min-h-16 flex-wrap items-center gap-3 border-b border-line bg-paper/90 px-4 py-2 backdrop-blur sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10">
         <Link href={isPage ? "/admin/posts/?type=page" : "/admin/posts/"} className="text-sm text-muted hover:text-ink">
           ← All {noun}s
         </Link>

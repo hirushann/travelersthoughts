@@ -8,8 +8,9 @@ import { signOut } from "./sign-out";
 export default async function PanelLayout({ children }: LayoutProps<"/admin">) {
   const user = await requireUser();
   return (
-    <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col lg:flex-row">
-      <aside className="border-b border-line bg-surface lg:sticky lg:top-0 lg:h-screen lg:w-60 lg:shrink-0 lg:border-r lg:border-b-0">
+    // The sidebar hugs the left edge at any screen width; only the content column is width-capped.
+    <div className="flex w-full flex-1 flex-col lg:flex-row">
+      <aside className="border-b border-line bg-surface lg:sticky lg:top-0 lg:h-screen lg:w-64 lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-b-0">
         <div className="flex h-full flex-col gap-4 p-4 lg:p-5">
           <div className="flex items-center justify-between">
             <Logo className="[&_span]:text-lg" />
@@ -42,7 +43,9 @@ export default async function PanelLayout({ children }: LayoutProps<"/admin">) {
           </div>
         </div>
       </aside>
-      <div className="min-w-0 flex-1 px-4 py-8 sm:px-8 lg:py-10">{children}</div>
+      <main className="min-w-0 flex-1">
+        <div className="w-full max-w-[1600px] px-4 py-8 sm:px-8 lg:px-10 lg:py-10">{children}</div>
+      </main>
       <div className="flex items-center justify-between border-t border-line bg-surface px-4 py-3 text-sm lg:hidden">
         <Link href="/admin/profile/">{user.name}</Link>
         <form action={signOut}>

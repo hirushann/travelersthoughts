@@ -13,7 +13,7 @@ export default async function PreviewPage({ params }: PageProps<"/admin/posts/[i
   if (!post || !canEditPost(user, post)) notFound();
 
   return (
-    <div className="-mx-4 -my-8 bg-paper pb-20 sm:-mx-8 lg:-my-10">
+    <div className="-mx-4 -my-8 bg-paper pb-20 sm:-mx-8 lg:-mx-10 lg:-my-10">
       <div className="sticky top-0 z-30 flex items-center justify-between gap-4 bg-ink px-4 py-2.5 text-sm text-paper sm:px-8">
         <span>
           Preview{post.status === "draft" ? " · draft, not visible to readers" : ""}

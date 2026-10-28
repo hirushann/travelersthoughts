@@ -72,7 +72,9 @@ export function RichTextEditor({ initialHtml, onChange, invalid }: Props) {
   }
 
   return (
-    <div className={`overflow-hidden rounded-2xl border bg-surface ${invalid ? "border-accent" : "border-line"}`}>
+    // overflow-clip (not hidden) rounds the corners without becoming a scroll container,
+    // so the toolbar below stays sticky to the window rather than to this box.
+    <div className={`overflow-clip rounded-2xl border bg-surface ${invalid ? "border-accent" : "border-line"}`}>
       {/* Sits just below the editor page's sticky save bar (h-16). */}
       <div className="sticky top-16 z-10 flex flex-wrap items-center gap-1 border-b border-line bg-surface/95 px-2 py-1.5 backdrop-blur">
         {mode === "visual" && editor ? <Toolbar editor={editor} onImage={() => setPickerOpen(true)} /> : (
