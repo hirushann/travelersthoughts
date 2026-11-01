@@ -18,11 +18,22 @@ const errorText = (err: unknown) => (err instanceof Error ? err.message : String
 // ---- Auth: a service account signs a JWT and swaps it for an access token. ----
 
 function serviceAccount() {
-  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON?.trim();
+  // Panels often add quotes or line breaks around pasted values.
+  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON?.trim().replace(/^['"]|['"]$/g, "").trim();
   if (!raw) return null;
   // hPanel can mangle multi-line values, so base64 of the key file is accepted too.
-  const json = JSON.parse(raw.startsWith("{") ? raw : Buffer.from(raw, "base64").toString("utf8"));
-  return { email: json.client_email as string, key: (json.private_key as string).replace(/\\n/g, "\n") };
+  const text = raw.startsWith("{") ? raw : Buffer.from(raw.replace(/\s+/g, ""), "base64").toString("utf8");
+  let json: { client_email?: string; private_key?: string };
+  try {
+    json = JSON.parse(text);
+  } catch {
+    // Show only the shape of the value, never the value itself.
+    throw new Error(
+      `GOOGLE_SERVICE_ACCOUNT_JSON isn't the key file or its base64 (it starts "${raw.slice(0, 4)}…", ${raw.length} characters; base64 of a key file starts "ewog" and is about 3,200 characters).`,
+    );
+  }
+  if (!json.client_email || !json.private_key) throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON is JSON but not a service account key file.");
+  return { email: json.client_email, key: json.private_key.replace(/\\n/g, "\n") };
 }
 
 async function accessToken(scope: string) {
