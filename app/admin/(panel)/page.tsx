@@ -39,11 +39,11 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
         </Link>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {cards.map((c) => (
-          <Link key={c.label} href={c.href} className="rounded-2xl border border-line bg-surface p-5 transition hover:border-ink">
+          <Link key={c.label} href={c.href} className="rounded-2xl border border-line bg-surface p-4 transition hover:border-ink sm:p-5">
             <p className="text-sm text-muted">{c.label}</p>
-            <p className="mt-2 font-display text-4xl font-semibold tabular-nums">{c.value}</p>
+            <p className="mt-2 font-display text-3xl font-semibold tabular-nums sm:text-4xl">{c.value}</p>
           </Link>
         ))}
       </div>

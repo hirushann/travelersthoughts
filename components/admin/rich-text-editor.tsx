@@ -107,7 +107,7 @@ export function RichTextEditor({ initialHtml, onChange, invalid }: Props) {
           }}
           spellCheck={false}
           aria-label="Post content (HTML)"
-          className="block min-h-[60vh] w-full resize-y bg-surface px-6 py-5 font-mono text-[13px] leading-relaxed outline-none"
+          className="block min-h-[60vh] w-full resize-y bg-surface px-6 py-5 font-mono text-base leading-relaxed outline-none lg:text-[13px]"
         />
       )}
 

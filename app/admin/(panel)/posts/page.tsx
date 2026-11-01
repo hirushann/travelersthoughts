@@ -79,10 +79,10 @@ export default async function PostsPage({ searchParams }: PageProps<"/admin/post
             </Link>
           )}
         </div>
-        <form className="flex gap-2" action="/admin/posts/">
+        <form className="flex w-full gap-2 sm:w-auto" action="/admin/posts/">
           {type === "page" && <input type="hidden" name="type" value="page" />}
           {status && <input type="hidden" name="status" value={status} />}
-          <input name="q" defaultValue={q} placeholder={`Search ${noun}…`} className={`${inputClass} w-64`} />
+          <input name="q" defaultValue={q} placeholder={`Search ${noun}…`} className={`${inputClass} sm:w-64`} />
         </form>
       </div>
 
@@ -137,7 +137,7 @@ export default async function PostsPage({ searchParams }: PageProps<"/admin/post
                           {p.coverImage && <Image src={p.coverImage} alt="" fill sizes="44px" className="object-cover" />}
                         </div>
                         <div className="min-w-0">
-                          <Link href={`/admin/posts/${p.id}/`} className="line-clamp-1 font-medium hover:text-accent">
+                          <Link href={`/admin/posts/${p.id}/`} className="line-clamp-2 font-medium hover:text-accent sm:line-clamp-1">
                             {p.title || "Untitled"}
                           </Link>
                           <p className="line-clamp-1 text-xs text-muted">/{p.slug}/</p>

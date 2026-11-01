@@ -196,7 +196,7 @@ export function PostEditor({ post, categories, authors, tagSuggestions, canChoos
                   setSlugTouched(true);
                   setSlug(e.target.value);
                 }}
-                className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-1 py-0.5 text-ink outline-none hover:border-line focus:border-ink aria-[invalid=true]:border-accent"
+                className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-1 py-0.5 text-base text-ink outline-none lg:text-sm hover:border-line focus:border-ink aria-[invalid=true]:border-accent"
               />
               <span>/</span>
             </div>

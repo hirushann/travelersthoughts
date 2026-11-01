@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { deleteManyMedia, deleteMedia, updateAlt, type MediaActionState } from "@/app/admin/(panel)/media/actions";
 import type { MediaItem } from "@/lib/media/storage";
 import { uploadImage } from "./media-picker";
@@ -13,6 +13,7 @@ const kb = (n: number) => (n > 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB
 export function MediaLibrary({ items }: { items: MediaItem[] }) {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
+  const details = useRef<HTMLElement>(null);
   const [selected, setSelected] = useState<MediaItem | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +21,11 @@ export function MediaLibrary({ items }: { items: MediaItem[] }) {
   const [ticked, setTicked] = useState<Set<number>>(new Set());
   const [bulkMessage, setBulkMessage] = useState<string | null>(null);
   const [bulkDeleting, setBulkDeleting] = useState(false);
+
+  // Below xl the details sit under the whole grid, so bring them into view on select.
+  useEffect(() => {
+    if (selected && !matchMedia("(min-width: 1280px)").matches) details.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [selected]);
 
   const toggle = (id: number) =>
     setTicked((prev) => {
@@ -126,7 +132,7 @@ export function MediaLibrary({ items }: { items: MediaItem[] }) {
         </ul>
       </div>
 
-      <aside className="xl:sticky xl:top-6 xl:self-start">
+      <aside ref={details} className="scroll-mt-4 xl:sticky xl:top-6 xl:self-start">
         {selected ? <Details key={selected.id} item={selected} onDeleted={() => setSelected(null)} /> : (
           <p className="rounded-2xl border border-line bg-surface p-5 text-sm text-muted">Select an image to see its details, edit alt text or delete it.</p>
         )}

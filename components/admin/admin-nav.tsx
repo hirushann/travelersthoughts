@@ -25,7 +25,7 @@ export function AdminNav({ isAdmin }: { isAdmin: boolean }) {
   const items = isAdmin ? [...ITEMS, ...ADMIN_ITEMS] : ITEMS;
 
   return (
-    <ul className="flex gap-1 overflow-x-auto text-sm lg:flex-col lg:overflow-visible">
+    <ul className="flex flex-wrap gap-1 text-sm lg:flex-col lg:flex-nowrap">
       {items.map((item) => {
         const active = item.match(pathname, type);
         return (

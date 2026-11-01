@@ -39,7 +39,8 @@ export function StatusBadge({ status }: { status: "draft" | "published" }) {
 }
 
 export const inputClass =
-  "block w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm outline-none transition focus:border-ink aria-[invalid=true]:border-accent";
+  // 16px below lg: iPhones zoom into any field smaller than that when it is tapped.
+  "block w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-base outline-none lg:text-sm transition focus:border-ink aria-[invalid=true]:border-accent";
 
 export const buttonClass = {
   primary: "rounded-full bg-ink px-4 py-2 text-sm font-semibold text-paper hover:bg-accent disabled:opacity-50",
