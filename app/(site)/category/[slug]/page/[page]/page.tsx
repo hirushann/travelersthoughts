@@ -17,7 +17,10 @@ export async function generateStaticParams() {
       return Array.from({ length: Math.max(0, pages - 1) }, (_, i) => ({ slug: c.slug, page: String(i + 2) }));
     }),
   );
-  return params.flat();
+  // Cache Components refuses an empty list, which happens when no category has a second
+  // page yet. This placeholder just renders the 404 for an out-of-range page.
+  const all = params.flat();
+  return all.length ? all : [{ slug: categories[0]?.slug ?? "none", page: "2" }];
 }
 
 export async function generateMetadata({ params }: PageProps<"/category/[slug]/page/[page]">): Promise<Metadata> {
