@@ -80,7 +80,7 @@ async function TrafficWidget() {
         <Stat label="Visitors" value={num(data.users[0])} change={<Change now={data.users[0]} before={data.users[1]} />} />
         <Stat label="Page views" value={num(data.views[0])} change={<Change now={data.views[0]} before={data.views[1]} />} />
       </div>
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2 [&>*]:min-w-0">
         <div>
           <h3 className="mb-1 text-xs font-medium text-muted">Top pages</h3>
           <List rows={data.topPages.map((p) => ({ label: p.path, value: num(p.views), href: p.path }))} />
@@ -110,7 +110,7 @@ async function SearchWidget() {
           change={<Change now={now.position} before={before.position} lowerIsBetter />}
         />
       </div>
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2 [&>*]:min-w-0">
         <div>
           <h3 className="mb-1 text-xs font-medium text-muted">Top searches</h3>
           <List rows={data.queries.map((q) => ({ label: q.query, value: `${num(q.clicks)} clicks · #${q.position.toFixed(0)}` }))} />
