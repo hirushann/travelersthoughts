@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Insights } from "@/components/admin/insights";
 import Link from "@/components/admin/link";
 import { adminDate, Notice, PageHeader } from "@/components/admin/ui";
 import { countNewMessages, dashboardStats } from "@/lib/admin/queries";
@@ -47,7 +48,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
         ))}
       </div>
 
-      <div className="mt-10 grid gap-8 xl:grid-cols-2">
+      <div className="mt-10 grid gap-8 xl:grid-cols-2 [&>*]:min-w-0">
         <section className="rounded-2xl border border-line bg-surface p-6">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold">Drafts in progress</h2>
@@ -92,6 +93,8 @@ export default async function Dashboard({ searchParams }: PageProps<"/admin">) {
           </ul>
         </section>
       </div>
+
+      <Insights />
     </>
   );
 }

@@ -18,8 +18,9 @@ Write at [localhost:3000/admin](http://localhost:3000/admin/). Publishing update
 
 | Section | What it does | Who |
 | --- | --- | --- |
-| Posts / Pages | Write in a visual editor (or HTML), set cover image, categories, tags, SEO title and description with a Google preview, preview drafts, publish, unpublish, delete | Authors: their own posts. Admins: all |
-| Media | Upload (drag and drop), edit alt text, delete unused images | Everyone; deleting others' uploads is admin-only |
+| Dashboard | Post counts, drafts, new messages, plus traffic, Google Search and speed widgets (see below) | Everyone |
+| Posts / Pages | Write in a visual editor (or HTML), set cover image, categories, tags, SEO title and description with a Google preview, preview drafts, publish, unpublish, delete (one at a time, ticked in bulk, or all drafts) | Authors: their own posts. Admins: all |
+| Media | Upload (drag and drop), edit alt text, delete unused images (one at a time or ticked in bulk) | Everyone; deleting others' uploads is admin-only |
 | Categories / Tags | Create, rename, reorder, delete | Admins |
 | Users | Add writers, change roles, reset passwords, unlock, deactivate | Admins |
 | Profile | Name, bio and photo shown on your posts; change password | Everyone |
@@ -61,6 +62,25 @@ rsync -avz storage/uploads/ user@server:/var/www/travelersthoughts-uploads/
 Then set `UPLOAD_DIR=/var/www/travelersthoughts-uploads` in the server's environment and restart. New uploads from the admin are written there too.
 
 With `output: "standalone"`, also copy `public/` and `.next/static/` next to `.next/standalone/server.js` as the Next.js docs describe. Uploads are deliberately excluded from the standalone bundle.
+
+## Dashboard insights
+
+The dashboard reads three Google services. Each widget works on its own and shows a "Couldn't load" note with the reason until its settings are in place. Results are cached (traffic and search for an hour, speed for a day), so the site itself does no extra work.
+
+| Widget | Needs |
+| --- | --- |
+| Traffic (Google Analytics 4) | `GOOGLE_SERVICE_ACCOUNT_JSON`, `GA4_PROPERTY_ID`, and `NEXT_PUBLIC_GA_ID` on the live site so visits are recorded |
+| Google Search (Search Console) | `GOOGLE_SERVICE_ACCOUNT_JSON`, `GSC_SITE_URL` |
+| Speed (PageSpeed Insights) | `GOOGLE_API_KEY` (without one, Google's shared free quota is usually used up) |
+
+One-time setup:
+
+1. In [Google Cloud Console](https://console.cloud.google.com/), create a project, then enable **Google Analytics Data API**, **Google Search Console API** and **PageSpeed Insights API** (APIs & Services → Library).
+2. IAM & Admin → Service accounts → **Create service account** (no roles needed). Open it → Keys → Add key → JSON. A key file downloads; keep it private.
+3. Google Analytics → Admin → Property access management → add the service account's email as **Viewer**. Admin → Property details shows the numeric **property ID** for `GA4_PROPERTY_ID`.
+4. Search Console → Settings → Users and permissions → add the same email with **Restricted** permission. `GSC_SITE_URL` is the property exactly as Search Console names it: `sc-domain:travelersthoughts.com` for a domain property, or `https://travelersthoughts.com/` for a URL-prefix one.
+5. APIs & Services → Credentials → Create credentials → **API key**; restrict it to the PageSpeed Insights API. That is `GOOGLE_API_KEY`.
+6. Put the values in hPanel's environment variables and redeploy. For `GOOGLE_SERVICE_ACCOUNT_JSON`, paste the key file as one line, or its base64 (`base64 -i key.json | tr -d '\n'`) if the panel breaks the JSON.
 
 ## Moving off WordPress
 
