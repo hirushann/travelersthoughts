@@ -96,12 +96,11 @@ export async function getTraffic(): Promise<Result<Traffic>> {
         body,
       );
     const last28 = { startDate: "28daysAgo", endDate: "yesterday" };
-    const [totals, pages, sources] = await Promise.all([
-      // Two date ranges: Google labels rows date_range_0 (now) and date_range_1 (before).
-      run({
-        dateRanges: [last28, { startDate: "56daysAgo", endDate: "29daysAgo" }],
-        metrics: [{ name: "activeUsers" }, { name: "screenPageViews" }],
-      }),
+    const totalsFor = (range: object) => run({ dateRanges: [range], metrics: [{ name: "activeUsers" }, { name: "screenPageViews" }] });
+    const [now, before, pages, sources] = await Promise.all([
+      // One report per period: with two ranges in one report, the rows were ambiguous.
+      totalsFor(last28),
+      totalsFor({ startDate: "56daysAgo", endDate: "29daysAgo" }),
       run({
         dateRanges: [last28],
         dimensions: [{ name: "pagePath" }],
@@ -117,13 +116,12 @@ export async function getTraffic(): Promise<Result<Traffic>> {
         limit: 5,
       }),
     ]);
-    const range = (i: number) => totals.rows?.find((r) => r.dimensionValues?.[0]?.value === `date_range_${i}`)?.metricValues;
-    const metric = (i: number, m: number) => Number(range(i)?.[m]?.value ?? 0);
+    const metric = (report: GaReport, m: number) => Number(report.rows?.[0]?.metricValues[m]?.value ?? 0);
     cacheLife("hours");
     return {
       data: {
-        users: [metric(0, 0), metric(1, 0)],
-        views: [metric(0, 1), metric(1, 1)],
+        users: [metric(now, 0), metric(before, 0)],
+        views: [metric(now, 1), metric(before, 1)],
         topPages: (pages.rows ?? []).map((r) => ({ path: r.dimensionValues![0].value, views: Number(r.metricValues[0].value) })),
         sources: (sources.rows ?? []).map((r) => ({ name: r.dimensionValues![0].value, sessions: Number(r.metricValues[0].value) })),
       },
