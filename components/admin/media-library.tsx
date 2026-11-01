@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useActionState, useRef, useState } from "react";
-import { deleteMedia, updateAlt, type MediaActionState } from "@/app/admin/(panel)/media/actions";
+import { deleteManyMedia, deleteMedia, updateAlt, type MediaActionState } from "@/app/admin/(panel)/media/actions";
 import type { MediaItem } from "@/lib/media/storage";
 import { uploadImage } from "./media-picker";
 import { buttonClass, inputClass } from "./ui";
@@ -17,6 +17,29 @@ export function MediaLibrary({ items }: { items: MediaItem[] }) {
   const [uploading, setUploading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [ticked, setTicked] = useState<Set<number>>(new Set());
+  const [bulkMessage, setBulkMessage] = useState<string | null>(null);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+
+  const toggle = (id: number) =>
+    setTicked((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
+
+  async function deleteTicked() {
+    if (!confirm(`Delete ${ticked.size} image${ticked.size === 1 ? "" : "s"} permanently?`)) return;
+    setBulkDeleting(true);
+    const { deleted, kept } = await deleteManyMedia([...ticked]);
+    setBulkDeleting(false);
+    setTicked(new Set());
+    if (selected && deleted.includes(selected.id)) setSelected(null);
+    setBulkMessage(
+      `Deleted ${deleted.length}.` + (kept ? ` Kept ${kept} that ${kept === 1 ? "is" : "are"} used in posts or uploaded by someone else.` : ""),
+    );
+    router.refresh();
+  }
 
   async function upload(files: FileList | File[]) {
     setError(null);
@@ -61,9 +84,34 @@ export function MediaLibrary({ items }: { items: MediaItem[] }) {
           {error && <p className="mt-2 text-accent">{error}</p>}
         </div>
 
+        <div className="mb-3 flex min-h-9 flex-wrap items-center gap-3 text-sm">
+          <label className="flex items-center gap-2 text-muted">
+            <input
+              type="checkbox"
+              className="size-4 accent-accent"
+              checked={items.length > 0 && ticked.size === items.length}
+              onChange={(e) => setTicked(e.target.checked ? new Set(items.map((i) => i.id)) : new Set())}
+            />
+            Select all on this page
+          </label>
+          {ticked.size > 0 && (
+            <button type="button" className={buttonClass.danger} disabled={bulkDeleting} onClick={deleteTicked}>
+              {bulkDeleting ? "Deleting…" : `Delete ${ticked.size} selected`}
+            </button>
+          )}
+          {bulkMessage && <span role="status" className="text-muted">{bulkMessage}</span>}
+        </div>
+
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6">
           {items.map((item) => (
-            <li key={item.id}>
+            <li key={item.id} className="relative">
+              <input
+                type="checkbox"
+                aria-label={`Select ${item.path}`}
+                checked={ticked.has(item.id)}
+                onChange={() => toggle(item.id)}
+                className="absolute top-2 left-2 z-10 size-5 accent-accent"
+              />
               <button
                 type="button"
                 onClick={() => setSelected(item)}

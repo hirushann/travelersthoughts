@@ -26,9 +26,10 @@ export async function updateAlt(_prev: MediaActionState, formData: FormData): Pr
   return { ok: true };
 }
 
-export async function deleteMedia(_prev: MediaActionState, formData: FormData): Promise<MediaActionState> {
-  const result = await loadOwned(Number(formData.get("id")));
-  if ("error" in result) return { error: result.error };
+/** Deletes one image, or returns why it can't be. */
+async function removeOne(id: number): Promise<string | null> {
+  const result = await loadOwned(id);
+  if ("error" in result) return result.error ?? null;
 
   // Refuse to break published images; the editor shows where it's used.
   const url = mediaUrl(result.item.path);
@@ -36,10 +37,27 @@ export async function deleteMedia(_prev: MediaActionState, formData: FormData): 
     .select({ uses: sql<number>`count(*)` })
     .from(posts)
     .where(or(like(posts.content, `%${url}%`), eq(posts.coverImage, url)));
-  if (Number(uses) > 0) return { error: `This image is used in ${uses} post${Number(uses) === 1 ? "" : "s"}. Remove it there first.` };
+  if (Number(uses) > 0) return `This image is used in ${uses} post${Number(uses) === 1 ? "" : "s"}. Remove it there first.`;
 
   await db.delete(media).where(eq(media.id, result.item.id));
   await deleteMediaFile(result.item.path);
+  return null;
+}
+
+export async function deleteMedia(_prev: MediaActionState, formData: FormData): Promise<MediaActionState> {
+  const error = await removeOne(Number(formData.get("id")));
+  if (error) return { error };
   revalidatePath("/admin/media/");
   return { ok: true };
+}
+
+/** Bulk delete: removes what it can and reports the images it had to keep. */
+export async function deleteManyMedia(ids: number[]): Promise<{ deleted: number[]; kept: number }> {
+  await requireUser();
+  const deleted: number[] = [];
+  for (const id of ids.filter(Number.isInteger).slice(0, 200)) {
+    if (!(await removeOne(id))) deleted.push(id);
+  }
+  revalidatePath("/admin/media/");
+  return { deleted, kept: ids.length - deleted.length };
 }

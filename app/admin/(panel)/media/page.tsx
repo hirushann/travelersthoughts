@@ -21,7 +21,7 @@ export default async function MediaPage({ searchParams }: PageProps<"/admin/medi
       <form className="mb-6" action="/admin/media/">
         <input name="q" defaultValue={q} placeholder="Search by file name or alt text…" className={`${inputClass} max-w-sm`} />
       </form>
-      <MediaLibrary items={items} />
+      <MediaLibrary key={`${q}-${page}`} items={items} />
       {totalPages > 1 && (
         <div className="mt-8 flex items-center justify-between text-sm">
           <span className="text-muted">Page {page} of {totalPages}</span>

@@ -160,3 +160,26 @@ export async function deletePost(formData: FormData) {
   updateTag(CONTENT_TAG);
   redirect(post.type === "page" ? "/admin/posts/?type=page&deleted=1" : "/admin/posts/?deleted=1");
 }
+
+/** Deletes the ticked posts (or, with intent=drafts, every draft of that type) the user may edit. */
+export async function deletePosts(formData: FormData) {
+  const user = await requireUser();
+  const type = str(formData, "type") === "page" ? "page" : "post";
+  const back = String(formData.get("back") || "/admin/posts/");
+  const where =
+    formData.get("intent") === "drafts"
+      ? and(eq(posts.type, type), eq(posts.status, "draft"))
+      : inArray(posts.id, formData.getAll("ids").map(Number).filter(Number.isInteger).concat(-1));
+  const ids = (await db.select({ id: posts.id, authorId: posts.authorId }).from(posts).where(where))
+    .filter((p) => canEditPost(user, p))
+    .map((p) => p.id);
+
+  if (ids.length) {
+    await db.delete(posts).where(inArray(posts.id, ids));
+    updateTag(CONTENT_TAG);
+  }
+  const url = new URL(back, "http://x");
+  url.searchParams.delete("page");
+  url.searchParams.set("deleted", String(ids.length));
+  redirect(`/admin/posts/${url.search}`);
+}
